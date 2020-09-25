@@ -8,8 +8,6 @@
 import UIKit
 import CoreData
 
-
-
 class MainVc: UIViewController, UITableViewDelegate, UITableViewDataSource {
    
     
@@ -25,15 +23,52 @@ class MainVc: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         fetchdata()
         
-        self.tableView.reloadData()
     
     }
     
+
+    override func viewWillAppear(_ animated: Bool) {
+        
+        fetchdata()
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+
     
     override func viewDidAppear(_ animated: Bool) {
         
+        fetchdata() 
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        let context = delegate.persistentContainer.viewContext
         
-        self.tableView.reloadData()
+        
+        if editingStyle == .delete {
+            
+            
+            let delettask = mytask[indexPath.row]
+            
+            context.delete(delettask)
+            
+            delegate.saveContext()
+            
+            fetchdata()
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+            
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -45,8 +80,19 @@ class MainVc: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         let taskname = mytask[indexPath.row]
         
-        cell.textLabel?.text = "\(String(describing: taskname.name))"
+        let name = taskname.name
         
+        if let myname = name{
+            
+            if taskname.smiley{
+                
+                cell.textLabel?.text = "😎 \(myname)"
+                
+            }else{
+            cell.textLabel?.text = myname
+            }
+        }
+    
         return cell
     }
     
@@ -60,7 +106,7 @@ class MainVc: UIViewController, UITableViewDelegate, UITableViewDataSource {
         do{
             mytask = try context.fetch(Task.fetchRequest())
             
-            tableView.reloadData()
+//            tableView.reloadData()
             
         } catch{
             

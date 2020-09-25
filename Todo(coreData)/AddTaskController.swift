@@ -62,7 +62,8 @@ class AddTaskController: UIViewController {
         
         mydelegates.saveContext()
         
-        self.dismiss(animated: true, completion: nil)
+        self.navigationController?.popToRootViewController(animated: true)
+        
         
         
     }
@@ -71,8 +72,7 @@ class AddTaskController: UIViewController {
     
     @IBAction func cancel(_ sender: Any) {
         
-        
-        self.dismiss(animated: true, completion: nil)
+        self.navigationController?.popToRootViewController(animated: true)
         
         
     }
